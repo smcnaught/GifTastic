@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Giphy API</title>
+</head>
+
+  <!-- CSS Styles -->
+  <style type="text/css">
+    img{width: 200px; height: 200px;}
+    .colOne{max-width: 70%; float: left;}
+    .colTwo{max-width: 30%; min-width: 30%; float: left;}
+    .button{padding: 5px 10px; background-color: teal; color:white; margin-right: 7px; border-radius: 8px;} 
+  </style>
+
+<body>
+  <h1></h1>
+  <div class = "colOne">
+  <img src="" id = "0" class = "gif" data-state="animate">
+  <img src="" id = "1" class = "gif" data-state="animate">
+  <img src="" id = "2" class = "gif" data-state="animate">
+  <img src="" id = "3" class = "gif" data-state="animate">
+  <img src="" id = "4" class = "gif" data-state="animate">
+  <img src="" id = "5" class = "gif" data-state="animate">
+  <img src="" id = "6" class = "gif" data-state="animate">
+  <img src="" id = "7" class = "gif" data-state="animate">
+  <img src="" id = "8" class = "gif" data-state="animate">
+  <img src="" id = "9" class = "gif" data-state="animate">
+  <img src="" id = "10" class = "gif" data-state="animate">
+  <img src="" id = "11" class = "gif" data-state="animate">
+  <img src="" id = "12" class = "gif" data-state="animate">
+  <img src="" id = "13" class = "gif" data-state="animate">
+  <img src="" id = "14" class = "gif" data-state="animate">
+  <img src="" id = "15" class = "gif" data-state="animate">
+  </div>
+
+  <div class = "colTwo">
+    <label for = "submit">Add an Animal:</label><br>
+    <input id = "userInput" type="text" name=""><br><br>
+    <input id = "submit" type="submit" value="Submit:" class = "button">
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  
+  // array of strings for my topics.
+  var topics = ['Dog', 'Cat', 'Monkey', 'Rabit', 'Hampster', 'Skunk', 'Goldfish', 'Turtle', 'Chicken', 'Frog', 'Lizard'];
+  var title;
+  var animate;
+  var still;
+  var state;
+  
+  // Function that adds buttons to the page. 
+  function createButton(holdName){
+    var input = $("<input type='button' class = 'button' value='" + holdName + "'/>");
+    input.appendTo($('h1'));
+  }
+
+  function renderButtons(){
+    $('h1').empty();
+    // for loop to add buttons to page using the topics array.
+    for (var i = 0; i < topics.length; i++) {
+    createButton(topics[i]);
+    }
+  }
+// DOCUMENT ON LOAD
+$(document).ready(function(){
+renderButtons();  
+
+  // Creates a new button when the user enters an animal.
+  $('#submit').click(function(){
+    // Grab the input from the text box. 
+    var userAnimal = $('#userInput').val().trim();
+    // createButton(userAnimal);
+    topics.push(userAnimal);
+    renderButtons();
+  })  
+  // when the user clicks a button - it takes the value from that button and makes it the "title" so it searches for that topic. 
+  $(document).on('click', 'input:button', function(){
+    title = $(this).val(); 
+
+    // queryURL for Giphy API
+    var queryURL = ("http://api.giphy.com/v1/gifs/search?q=" + title +  "&api_key=dc6zaTOxFJmzC");
+
+      $.ajax({
+        url: queryURL,
+        method: 'GET'
+      }).done(function(response) {
+      console.log(response);
+      
+        // Insert 15 gifs related to the button the user clicks.
+        for (var i = 0; i < 16; i++) {
+
+        // Adding gifs
+        $("#" + i).attr("src", response.data[i].images.downsized.url);
+        // Adding the ratings. 
+        // $('#rating' + [i]).html("Rating: " + response.data[i].rating);
+        }
+
+          // when the user clicks a gif, change it to either still or animate. 
+          // Function for stopping/starting the gif's.
+          $(document).on("click", ".gif", function(){
+            // get the id of this.
+            var myvar = $(this).attr("id");
+            state = $(this).attr("data-state"); 
+
+              if (state === "animate") {
+                $(this).attr("src", response.data[myvar].images.downsized_still.url);
+                $(this).attr("data-state", "still");
+              } else{
+                $(this).attr("src", response.data[myvar].images.downsized.url);
+                $(this).attr("data-state", "animate");
+              }
+                          
+          })
+
+      })
+
+  }) 
+ 
+});
+
+</script>
+</body>
+</html>
