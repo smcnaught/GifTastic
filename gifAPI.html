@@ -8,31 +8,15 @@
   <!-- CSS Styles -->
   <style type="text/css">
     img{width: 200px; height: 200px;}
-    .colOne{max-width: 70%; float: left;}
+    p{display: inline-block;}
+    .colOne{max-width: 70%; min-width: 70%; float: left;}
     .colTwo{max-width: 30%; min-width: 30%; float: left;}
     .button{padding: 5px 10px; background-color: teal; color:white; margin-right: 7px; border-radius: 8px;} 
   </style>
 
 <body>
   <h1></h1>
-  <div class = "colOne">
-  <img src="" id = "0" class = "gif" data-state="animate">
-  <img src="" id = "1" class = "gif" data-state="animate">
-  <img src="" id = "2" class = "gif" data-state="animate">
-  <img src="" id = "3" class = "gif" data-state="animate">
-  <img src="" id = "4" class = "gif" data-state="animate">
-  <img src="" id = "5" class = "gif" data-state="animate">
-  <img src="" id = "6" class = "gif" data-state="animate">
-  <img src="" id = "7" class = "gif" data-state="animate">
-  <img src="" id = "8" class = "gif" data-state="animate">
-  <img src="" id = "9" class = "gif" data-state="animate">
-  <img src="" id = "10" class = "gif" data-state="animate">
-  <img src="" id = "11" class = "gif" data-state="animate">
-  <img src="" id = "12" class = "gif" data-state="animate">
-  <img src="" id = "13" class = "gif" data-state="animate">
-  <img src="" id = "14" class = "gif" data-state="animate">
-  <img src="" id = "15" class = "gif" data-state="animate">
-  </div>
+  <div class = "colOne"></div>
 
   <div class = "colTwo">
     <label for = "submit">Add an Animal:</label><br>
@@ -87,36 +71,49 @@ renderButtons();
         method: 'GET'
       }).done(function(response) {
       console.log(response);
-      
+      $(".colOne").empty();
         // Insert 15 gifs related to the button the user clicks.
         for (var i = 0; i < 16; i++) {
 
         // Adding gifs
-        $("#" + i).attr("src", response.data[i].images.downsized.url);
+        var newGif = $("<img>");
+        var newRating =$("<p>");
+        newGif.attr("id", i);
+        newGif.addClass("gif");
+        newGif.attr("data-state", "animate");
+        newGif.attr("src", response.data[i].images.downsized.url);
+        newGif.attr("data-still", response.data[i].images.downsized_still.url); 
+        newGif.attr("data-animate", response.data[i].images.downsized.url);
+        newRating.html("Rating: " + response.data[i].rating);
+        $(".colOne").append(newRating);
+        $(".colOne").append(newGif);
+
         // Adding the ratings. 
         // $('#rating' + [i]).html("Rating: " + response.data[i].rating);
         }
 
-          // when the user clicks a gif, change it to either still or animate. 
-          // Function for stopping/starting the gif's.
-          $(document).on("click", ".gif", function(){
-            // get the id of this.
-            var myvar = $(this).attr("id");
-            state = $(this).attr("data-state"); 
-
-              if (state === "animate") {
-                $(this).attr("src", response.data[myvar].images.downsized_still.url);
-                $(this).attr("data-state", "still");
-              } else{
-                $(this).attr("src", response.data[myvar].images.downsized.url);
-                $(this).attr("data-state", "animate");
-              }
-                          
-          })
-
       })
 
   }) 
+            // when the user clicks a gif, change it to either still or animate. 
+            $(document).on("click", ".gif", function(){
+            // get the id of this.
+            var myvar = $(this).attr("id");
+            state = $(this).attr("data-state"); 
+            var animateURL = $(this).attr("data-animate");
+            var stillURL = $(this).attr("data-still");
+
+              if (state === "animate") {
+                // $(this).attr("src", response.data[myvar].images.downsized_still.url);
+                $(this).attr("data-state", "still");
+                $(this).attr("src", stillURL);
+              } else{
+                // $(this).attr("src", response.data[myvar].images.downsized.url);
+                $(this).attr("data-state", "animate");
+                $(this).attr("src", animateURL);
+              }
+                          
+          })
  
 });
 
